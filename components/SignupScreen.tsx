@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
-export default function SigninScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSignup = () => {
     if (!email || !password || !confirmPassword) {
@@ -18,14 +18,18 @@ export default function SigninScreen() {
       return;
     }
     
+    if (!acceptedTerms) {
+      Alert.alert('Erro', 'Você deve aceitar os Termos de Uso.');
+      return;
+    }
 
     // Aqui você pode chamar sua API de cadastro
-    Alert.alert('Sucesso', 'Login realizado com sucesso!');
+    Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Cadastro</Text>
 
       <TextInput
         style={styles.input}
@@ -45,14 +49,35 @@ export default function SigninScreen() {
         onChangeText={setPassword}
       />
 
-    
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Confirmar Senha"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+
+      {/* Aceite de Termos */}
+      <TouchableOpacity 
+        style={styles.termsContainer}
+        onPress={() => setAcceptedTerms(!acceptedTerms)}
+      >
+        <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}>
+          {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
+        </View>
+        <Text style={styles.termsText}>
+          Aceito os <Text style={styles.link}>Termos de Uso</Text> e{' '}
+          <Text style={styles.link}>Política de Privacidade</Text>
+        </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.cadastroLink}>
-        <Text style={styles.cadastroText}>
-        Não tem uma conta? <Text style={styles.cadastroHighlight}>Cadastrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.loginLink}>
+        <Text style={styles.loginText}>
+          Já tem uma conta? <Text style={styles.loginHighlight}>Entrar</Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -94,21 +119,49 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  
-  
+  termsContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginVertical: 16,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#111',
+    borderRadius: 4,
+    marginRight: 8,
+    marginTop: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: '#111',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  termsText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#555',
+    lineHeight: 20,
+  },
   link: {
     color: '#0066cc',
     textDecorationLine: 'underline',
   },
-  cadastroLink: {
+  loginLink: {
     marginTop: 24,
     alignItems: 'center',
   },
-  cadastroText: {
+  loginText: {
     fontSize: 15,
     color: '#555',
   },
-  cadastroHighlight: {
+  loginHighlight: {
     color: '#111',
     fontWeight: '600',
   },
