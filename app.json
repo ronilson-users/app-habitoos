@@ -19,6 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
+      "package": "app-habitoos",
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -46,3 +47,6 @@
     }
   }
 }
+
+
+
