@@ -1,35 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+// components/SignupScreen.tsx
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function SignupScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-  const handleSignup = () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
-      return;
-    }
-    
-    if (!acceptedTerms) {
-      Alert.alert('Erro', 'Você deve aceitar os Termos de Uso.');
-      return;
-    }
-
-    // Aqui você pode chamar sua API de cadastro
-    Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    loading,
+    signup,
+  } = useAuth();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cadastro</Text>
+      <Text style={styles.title}>Criar Conta</Text>
 
       <TextInput
         style={styles.input}
@@ -57,28 +45,20 @@ export default function SignupScreen() {
         onChangeText={setConfirmPassword}
       />
 
-      {/* Aceite de Termos */}
       <TouchableOpacity 
-        style={styles.termsContainer}
-        onPress={() => setAcceptedTerms(!acceptedTerms)}
+        style={[styles.button, loading && styles.buttonDisabled]} 
+        onPress={signup}
+        disabled={loading}
       >
-        <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}>
-          {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
-        </View>
-        <Text style={styles.termsText}>
-          Aceito os <Text style={styles.link}>Termos de Uso</Text> e{' '}
-          <Text style={styles.link}>Política de Privacidade</Text>
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        )}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.loginLink}>
-        <Text style={styles.loginText}>
-          Já tem uma conta? <Text style={styles.loginHighlight}>Entrar</Text>
-        </Text>
+      <TouchableOpacity style={styles.link}>
+        <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -87,20 +67,20 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 24,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: '700',
     marginBottom: 32,
-    textAlign: "center",
-    color: "#111",
+    textAlign: 'center',
+    color: '#111',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -109,60 +89,26 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
-    backgroundColor: "#111",
+    backgroundColor: '#111',
     borderRadius: 10,
     paddingVertical: 14,
-    alignItems: "center",
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#888',
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  termsContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginVertical: 16,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: '#111',
-    borderRadius: 4,
-    marginRight: 8,
-    marginTop: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: '#111',
-  },
-  checkmark: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  termsText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#555',
-    lineHeight: 20,
+    fontSize: 16,
+    fontWeight: '600',
   },
   link: {
-    color: '#0066cc',
-    textDecorationLine: 'underline',
-  },
-  loginLink: {
     marginTop: 24,
     alignItems: 'center',
   },
-  loginText: {
+  linkText: {
     fontSize: 15,
-    color: '#555',
-  },
-  loginHighlight: {
-    color: '#111',
-    fontWeight: '600',
+    color: '#0066cc',
+    textDecorationLine: 'underline',
   },
 });
