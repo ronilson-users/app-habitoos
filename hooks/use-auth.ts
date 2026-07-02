@@ -1,6 +1,7 @@
 // hooks/use-auth.ts
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { authService } from '../services/authService';
 
 export const useAuth = () => {
   const [email, setEmail] = useState('');
@@ -17,17 +18,19 @@ export const useAuth = () => {
     setLoading(true);
 
     try {
-      // TODO: Integração com API
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      Alert.alert('Sucesso', 'Login realizado com sucesso!');
-      return true;
+      const result = await authService.login(email, password);
+      
+      if (result.success) {
+        Alert.alert('Sucesso', 'Login realizado com sucesso!');
+        // TODO: Salvar token (AsyncStorage / Context / Zustand)
+        return true;
+      }
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Falha ao fazer login.');
-      return false;
     } finally {
       setLoading(false);
     }
+    return false;
   };
 
   const signup = async () => {
@@ -44,27 +47,21 @@ export const useAuth = () => {
     setLoading(true);
 
     try {
-      // TODO: Integração com API
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-      return true;
+      const result = await authService.register(email, password);
+      
+      if (result.success) {
+        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+        return true;
+      }
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Falha ao criar conta.');
-      return false;
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetFields = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
+    return false;
   };
 
   return {
-    // States
     email,
     setEmail,
     password,
@@ -72,10 +69,7 @@ export const useAuth = () => {
     confirmPassword,
     setConfirmPassword,
     loading,
-
-    // Actions
     signin,
     signup,
-    resetFields,
   };
 };

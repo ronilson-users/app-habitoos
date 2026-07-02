@@ -1,0 +1,39 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*'  # Dispara ao criar tags como v1.0.0
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Create production build
+        run: |
+          eas build --platform android --profile production --non-interactive
+          eas build --platform ios --profile production --non-interactive
+      
+      - name: Submit to stores
+        run: |
+          eas submit --platform android --latest
+          eas submit --platform ios --latest

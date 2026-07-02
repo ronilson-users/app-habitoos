@@ -1,7 +1,7 @@
 // components/SigninScreen.tsx
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function SigninScreen() {
   const {
