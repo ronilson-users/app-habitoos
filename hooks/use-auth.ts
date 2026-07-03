@@ -1,75 +1,50 @@
 // hooks/use-auth.ts
-import { useState } from 'react';
-import { Alert } from 'react-native';
-import { authService } from '../services/authService';
+import * as SecureStore from 'expo-secure-store';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 
-export const useAuth = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-  const signin = async () => {
-    if (!email || !password) {
-      Alert.alert('Erro', 'Por favor, preencha e-mail e senha.');
-      return false;
-    }
+export function useAuth() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    setLoading(true);
+  useEffect(() => {
+    loadUser();
+  }, []);
 
+  const loadUser = async () => {
     try {
-      const result = await authService.login(email, password);
+      const token = await SecureStore.getItemAsync('token');
+      const userData = await SecureStore.getItemAsync('user');
       
-      if (result.success) {
-        Alert.alert('Sucesso', 'Login realizado com sucesso!');
-        // TODO: Salvar token (AsyncStorage / Context / Zustand)
-        return true;
+      if (token && userData) {
+        setUser(JSON.parse(userData));
       }
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Falha ao fazer login.');
+    } catch (error) {
+      console.error('Erro ao carregar usuário:', error);
     } finally {
       setLoading(false);
     }
-    return false;
   };
 
-  const signup = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
-      return false;
-    }
-
-    setLoading(true);
-
+  const logout = async () => {
     try {
-      const result = await authService.register(email, password);
-      
-      if (result.success) {
-        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-        return true;
-      }
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Falha ao criar conta.');
-    } finally {
-      setLoading(false);
+      await SecureStore.deleteItemAsync('token');
+      await SecureStore.deleteItemAsync('user');
+      setUser(null);
+      router.replace('/(auth)/signin');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
     }
-    return false;
   };
 
-  return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    loading,
-    signin,
-    signup,
-  };
-};
+  return { user, loading, logout, setUser };
+}

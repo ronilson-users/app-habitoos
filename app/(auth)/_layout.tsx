@@ -1,26 +1,22 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+//2026/habitoos/app/(auth)/_layout.tsx
+
+import { Tabs } from 'expo-router';
+import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+export default function AuthLayout() {
+ 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <Stack screenOptions={{ 
+      headerShown: false,
+    
         
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-      
-    </ThemeProvider>
+    }}>
+      <Stack.Screen name="signin" />
+      <Stack.Screen name="signup" />
+
+       <StatusBar style="auto" />
+    </Stack>
   );
 }
